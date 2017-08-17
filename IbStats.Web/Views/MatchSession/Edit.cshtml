@@ -1,0 +1,126 @@
+﻿@model IbStats.ViewModels.MatchSessionViewModel
+@using IbStats.Models
+
+@helper RenderButtonColumn(IbStats.Models.Match m)
+{
+    object routeValues = null;
+
+    routeValues = new { id = Model.MatchSession.MatchSessionID, matchId = m.MatchID };
+    
+    @Html.ActionLink(" ", "EditMatch", "Game", routeValues, new { @class = "btn edit fa fa-pencil-square-o fa-2x" })
+    @Html.ActionLink(" ", "DeleteMatch", "MatchSession", routeValues, new { @class = "btn delete fa fa-remove fa-2x" })
+}
+
+@helper RenderGoalsTeam1Column(IbStats.Models.Match m)
+{
+    @(m.Goals.Where(x => Model.MatchSession.Team1.Players.Contains(x.Scorer)).Count())
+}
+
+@helper RenderGoalsTeam2Column(IbStats.Models.Match m)
+{
+    @(m.Goals.Where(x => Model.MatchSession.Team2.Players.Contains(x.Scorer)).Count())
+}
+
+<h2>
+    @if (Model.MatchSession.MatchSessionID == 0)
+    { @("Lägg till") }
+    else
+    { @("Ändra") } speltillfälle
+</h2>
+<hr />
+<div class="panel panel-default">
+    <div class="panel-body table-responsive">
+
+        @using (Html.BeginForm("Save", "MatchSession", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+        {
+            @Html.HiddenFor(x => x.MatchSession.MatchSessionID)
+            <div class="form-group">
+                <div class="col-md-2">
+                    @Html.LabelFor(x => x.MatchSession.Season, "Säsong")
+                </div>
+                <div class="col-md-4">
+                    @Html.DropDownListFor(m => m.MatchSession.Season.SeasonID, new SelectList(Model.AllSeasons, "SeasonID", "Name"), new { @class = "form-control chosen-select", data_placeholder = "Välj säsong" })
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-2">
+                    @Html.LabelFor(x => x.MatchSession.MatchDate, "Datum")
+                </div>
+                <div class="col-md-4">
+                    @Html.TextBoxFor(x => x.MatchSession.MatchDate, "{0:yyyy-MM-dd}", new { @class = "form-control datepicker", data_date_format = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern.ToLower() })
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-2">
+                    @Html.LabelFor(x => x.SelectedPlayerIdsTeam1, "Lag Blå")
+                </div>
+                <div class="col-md-4">
+                    @Html.ListBoxFor(x => x.SelectedPlayerIdsTeam1, new MultiSelectList(Model.AllPlayers, "PlayerID", "Name", Model.MatchSession.Team1.Players.Select(x => x.PlayerID)), new { @class = " form-control chosen-select", data_placeholder = "Välj spelare", Multiple = "multiple" })
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-2">
+                    @Html.LabelFor(x => x.SelectedPlayerIdsTeam2, "Lag Gul")
+                </div>
+                <div class="col-md-4">
+                    @Html.ListBoxFor(x => x.SelectedPlayerIdsTeam2, new MultiSelectList(Model.AllPlayers, "PlayerID", "Name", Model.MatchSession.Team2.Players.Select(x => x.PlayerID)), new { @class = "form-control chosen-select", data_placeholder = "Välj spelare", Multiple = "multiple" })
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-2">
+                    @Html.LabelFor(x => x.MatchSession.FirstWasher.PlayerID, "Förste tvättare")
+                </div>
+                <div class="col-md-4">
+                    @Html.DropDownListFor(x => x.MatchSession.FirstWasher.PlayerID, new SelectList(Model.AllPlayers, "PlayerID", "Name"), "Välj förste tvättare...", new { @class = "form-control chosen-select", data_placeholder = "Välj spelare" })
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-2">
+                    @Html.LabelFor(x => x.MatchSession.SecondWasher.PlayerID, "Andre tvättare")
+                </div>
+                <div class="col-md-4">
+                    @Html.DropDownListFor(x => x.MatchSession.SecondWasher.PlayerID, new SelectList(Model.AllPlayers, "PlayerID", "Name"), "Välj andre tvättare...", new { @class = "form-control chosen-select", data_placeholder = "Välj spelare" })
+                </div>
+            </div>
+            <button type="submit" class="btn btn-success"><i class="fa fa-check">&nbsp;</i>Spara</button>
+            <a href="@Url.Action("Index", "MatchSession")" class="btn btn-default"><i class="fa fa-times">&nbsp;</i>Avbryt</a>
+        }
+    </div>
+</div>
+
+@if (Model.MatchSession.Matches != null && Model.MatchSession.Matches.Count > 0)
+{
+    <div class="panel panel-default">
+        <div class="panel-heading">Matcher</div>
+        <div class="panel-body table-responsive">
+            <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                    <tr>
+                        <th>Mål lag blå</th>
+                        <th>Mål lag gul</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (Match m in Model.MatchSession.Matches)
+                    {
+                        <tr>
+                            <td>@RenderGoalsTeam1Column(m)</td>
+                            <td>@RenderGoalsTeam2Column(m)</td>
+                            <td>@RenderButtonColumn(m)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".chosen-select").chosen();
+            $(".datepicker").datepicker();
+        });
+    </script>
+}

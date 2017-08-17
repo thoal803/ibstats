@@ -1,0 +1,32 @@
+﻿@model IbStats.ViewModels.GameViewModel
+@using IbStats.Models;
+
+<h1>Välj Speltillfälle</h1>
+<div class="panel panel-default">
+    <div class="panel-body">
+        @Html.LabelFor(m => m.Season.SeasonID, "Säsong")<br />
+        @Html.DropDownListFor(m => m.Season.SeasonID, new SelectList(Model.AllSeasons, "SeasonID", "Name"), new { @class = "form-control chosen-select season-select", data_placeholder = "Välj säsong" })
+    </div>
+</div>
+<div class="panel panel-default">
+    <div class="panel-body">
+        <div class="list-group">
+            @foreach (MatchSession ms in Model.MatchSessions.OrderBy(m => m.MatchDate))
+            {
+                <a class="list-group-item" href="@Url.Action("PlayMatchSession", "Game", new { id = ms.MatchSessionID })">@String.Format("{0:yyyy-MM-dd}", @ms.MatchDate)<i class="pull-right fa fa-chevron-right"></i></a>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".chosen-select").chosen();
+
+            $("#Season_SeasonID").chosen().change(function (event) {
+                window.location.href = window.location.pathname + "?seasonId=" + $("#Season_SeasonID").val();
+            });
+        });
+    </script>
+}

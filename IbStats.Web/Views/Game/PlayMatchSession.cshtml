@@ -1,0 +1,154 @@
+﻿@model IbStats.ViewModels.PlayMatchViewModel
+@using IbStats.Models;
+
+@helper RenderButtonColumn(IbStats.Models.Match m)
+{
+    object routeValues = null;
+
+    if (Model.CurrentMatch == null)
+    {
+        routeValues = new { id = Model.MatchSession.MatchSessionID, matchId = m.MatchID };
+    }
+    else
+    {
+        routeValues = new { id = Model.MatchSession.MatchSessionID, matchId = m.MatchID, currentMatchId = Model.CurrentMatch.MatchID };
+    }
+
+    @Html.ActionLink(" ", "EditMatch", "Game", routeValues, new { @class = "btn edit fa fa-pencil-square-o fa-2x" })
+    @Html.ActionLink(" ", "DeleteMatch", "Game", routeValues, new { @class = "btn delete fa fa-remove fa-2x" })
+}
+
+@helper RenderGoalsTeam1Column(IbStats.Models.Match m)
+{
+    @m.Goals.Where(x => Model.MatchSession.Team1.Players.Contains(x.Scorer)).Count();
+}
+
+@helper RenderGoalsTeam2Column(IbStats.Models.Match m)
+{
+    @m.Goals.Where(x => Model.MatchSession.Team2.Players.Contains(x.Scorer)).Count();
+}
+
+
+
+
+
+
+<h3 class="page-header">Speltillfälle @String.Format("{0:yyyy-MM-dd}", @Model.MatchSession.MatchDate)</h3>
+ 
+@if(Model.CurrentMatch == null)
+{ 
+    <div class="panel">
+        <div class="panel-body">
+            <a href="@Url.Action("StartMatch", "Game", new {id = @Model.MatchSession.MatchSessionID})" class="btn btn-block btn-lg btn-success"><i class="fa fa-plus">&nbsp;</i>Starta match</a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Aktuell ställning</h3>
+                </div>
+                <div class="panel-body text-center">
+                    <div class="col-md-4 standings">
+                        @if (Model.CurrentMatch != null)
+                        {
+                            @Model.CurrentMatch.Goals.Where(x => Model.MatchSession.Team1.Players.Contains(x.Scorer)).Count();
+                        }
+                    </div>
+                    <div class="col-md-4 standings">
+                        -
+                    </div>
+                    <div class="col-md-4 standings">
+                        @if (Model.CurrentMatch != null)
+                        {
+                            @Model.CurrentMatch.Goals.Where(x => Model.MatchSession.Team2.Players.Contains(x.Scorer)).Count();
+                        }
+                    </div>
+               </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel">
+                <div class="panel-body">
+                    <a href="@Url.Action("DeleteLastGoal", "Game", new {id = @Model.MatchSession.MatchSessionID, matchId = @Model.CurrentMatch.MatchID})" class="btn btn-block btn-lg btn-danger"><i class="fa fa-fw fa-remove">&nbsp;</i>Ångra senaste målet</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12 col-md-6">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Välj målskytt Lag Blå</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="list-group">
+                        @foreach (Player p in Model.MatchSession.Team1.Players)
+                        {
+                            <a class="list-group-item btn" href="@Url.Action("AddGoal", "Game", new { id = Model.MatchSession.MatchSessionID, matchId = Model.CurrentMatch.MatchID, playerId = p.PlayerID, teamNo = 1 })">@p.Name</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-12 col-md-6">
+            <div class="panel panel-warning">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Välj målskytt Lag Gul</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="list-group">
+                        @foreach (Player p in Model.MatchSession.Team2.Players)
+                        {
+                            <a class="list-group-item btn" href="@Url.Action("AddGoal", "Game", new { id = Model.MatchSession.MatchSessionID, matchId = Model.CurrentMatch.MatchID, playerId = p.PlayerID, teamNo = 2 })">@p.Name</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel">
+                <div class="panel-body">
+                    <a href="@Url.Action("EndMatch", "Game", new {id = @Model.MatchSession.MatchSessionID, matchId = @Model.CurrentMatch.MatchID })" class="btn btn-block btn-lg btn-warning"><i class="fa fa-fw fa-arrow-left">&nbsp;</i>Avsluta match</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+}
+
+
+@if (Model.MatchList.Count > 0)
+{
+    <div class="panel panel-default">
+        <div class="panel-heading">Tidigare Matcher</div>
+        <div class="panel-body table-responsive">
+            <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                    <tr>
+                        <th>Mål lag blå</th>
+                        <th>Mål lag gul</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (Match m in Model.MatchList)
+                    {
+                        <tr>
+                            <td>@RenderGoalsTeam1Column(m)</td>
+                            <td>@RenderGoalsTeam2Column(m)</td>
+                            <td>@RenderButtonColumn(m)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

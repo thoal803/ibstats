@@ -1,0 +1,80 @@
+﻿@model IbStats.ViewModels.MatchSessionListViewModel
+@using IbStats.Models
+
+
+@helper RenderTeamColumn(IbStats.Models.Team t)
+{
+    string result = "";
+    bool isFirst = true;
+
+    foreach (IbStats.Models.Player p in t.Players.Where(x => x.Name != "Blå" && x.Name != "Gul"))
+    {
+        if (!isFirst)
+        {
+            result += ", ";
+        }
+
+        result += p.Name;
+        isFirst = false;
+    }
+
+    @result
+}
+
+@helper RenderButtonColumn(IbStats.Models.MatchSession m)
+{
+    @Html.ActionLink(" ", "Edit", "MatchSession", new { id = m.MatchSessionID }, new { @class = "btn edit fa fa-pencil-square-o fa-2x" })
+    @Html.ActionLink(" ", "Delete", "MatchSession", new { id = m.MatchSessionID }, new { @class = "btn delete fa fa-remove fa-2x" })
+}
+
+<h1>Speltillfällen</h1>
+<div class="panel panel-default">
+    <div class="panel-body">
+        @Html.LabelFor(m => m.Season.SeasonID, "Säsong")<br />
+        @Html.DropDownListFor(m => m.Season.SeasonID, new SelectList(Model.AllSeasons, "SeasonID", "Name"), new { @class = "form-control chosen-select season-select", data_placeholder = "Välj säsong" })
+    </div>
+</div>
+<div class="panel panel-default">
+    <div class="panel-body table-responsive">
+        <table class="table table-bordered table-striped table-condensed">
+            <thead>
+                <tr>
+                    <th class="col-md-1">Datum</th>
+                    <th class="col-md-3">Lag blå</th>
+                    <th class="col-md-3">Lag gul</th>
+                    <th class="col-md-1">Förste tvättare</th>
+                    <th class="col-md-1">Andre tvättare</th>
+                    <th class="col-md-3">&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (MatchSession session in Model.MatchSessions.OrderBy(x => x.MatchDate))
+            {
+                    <tr>
+                        <td>@session.MatchDate.ToShortDateString()</td>
+                        <td>@RenderTeamColumn(session.Team1)</td>
+                        <td>@RenderTeamColumn(session.Team2)</td>
+                        <td>@session.FirstWasher.Name</td>
+                        <td>@session.SecondWasher.Name</td>
+                        <td>@RenderButtonColumn(session)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="panel-footer">
+        <a href="@Url.Action("Edit", "MatchSession", new {id = 0, seasonID = Model.Season.SeasonID})" class="btn btn-success"><i class="fa fa-plus">&nbsp;</i>Lägg till speltillfälle</a>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".chosen-select").chosen();
+
+            $("#Season_SeasonID").chosen().change(function (event) {
+                window.location.href = window.location.pathname + "?seasonId=" + $("#Season_SeasonID").val();
+            });
+        });
+    </script>
+}

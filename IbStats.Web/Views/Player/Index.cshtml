@@ -1,0 +1,36 @@
+﻿@model IEnumerable<IbStats.Models.Player>
+@using IbStats.Models
+
+@helper RenderButtonColumn(Player p)
+{
+    @Html.ActionLink(" ", "Edit", "Player", new { id = p.PlayerID }, new { @class = "btn edit fa fa-pencil-square-o fa-2x" })
+    @Html.ActionLink(" ", "Delete", "Player", new { id = p.PlayerID }, new { @class = "btn delete fa fa-remove fa-2x" })
+}
+
+<h1>Spelare</h1>
+<div class="panel panel-default">
+    <div class="panel-body table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th class="col-md-4">Namn</th>
+                    <th class="col-md-4">E-post</th>
+                    <th class="col-md-4">&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Player player in Model.OrderBy(x => x.Name))
+                {
+                    <tr>
+                        <td>@player.Name</td>
+                        <td>@player.Email</td>
+                        <td>@RenderButtonColumn(player)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="panel-footer">
+        <a href="@Url.Action("Edit", "Player", new {id = 0})" class="btn btn-success"><i class="fa fa-plus">&nbsp;</i>Lägg till spelare</a>
+    </div>
+</div>

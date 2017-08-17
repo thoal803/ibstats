@@ -1,0 +1,31 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IB-stats</title>
+    <link rel="stylesheet" href="~/wwwroot/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/Content/Site.css" />
+    <link rel="stylesheet" href="~/wwwroot/lib/chosen/chosen.min.css" />
+    <link rel="stylesheet" href="~/wwwroot/lib/bootstrap-datepicker/dist/css/bootstrap-datepicker3.min.css" />
+    <link rel="stylesheet" href="~/wwwroot/lib/font-awesome/css/font-awesome.min.css" />
+</head>
+<body>
+    @Html.Partial("_Navbar")
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - IB-stats</p>
+        </footer>
+    </div>
+
+    <script src="~/wwwroot/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/wwwroot/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="~/wwwroot/lib/respond/dest/respond.min.js"></script>
+    <script src="~/wwwroot/lib/chosen/chosen.jquery.min.js"></script>
+    <script src="~/wwwroot/lib/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
+    <script src="~/Scripts/Site.js"></script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>

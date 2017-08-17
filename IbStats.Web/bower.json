@@ -1,0 +1,12 @@
+{
+  "name": "IbStats",
+  "private": true,
+  "dependencies": {
+    "bootstrap": "*",
+    "jquery-validation-unobtrusive": "*",
+    "respond": "*",
+    "chosen": "*",
+    "bootstrap-datepicker": "*",
+    "font-awesome": "*"
+  }
+}

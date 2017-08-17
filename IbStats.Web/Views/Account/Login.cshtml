@@ -1,0 +1,22 @@
+﻿@using IbStats.Web.Models
+@model LoginViewModel
+
+@using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-login", role = "form" }))
+{
+    var valMsg = ViewData.ModelState.Values.SelectMany(modelState => modelState.Errors).ToList();
+
+    if (valMsg.Count > 0)
+    {
+        <div class="alert alert-danger" role="alert">
+            <i class="fa fa-exclamation-triangle fa-2x fa-pull-left"></i>@Html.ValidationMessage("LoginError")
+        </div>
+    }
+
+    @Html.AntiForgeryToken()
+    <h2 class="form-login-heading">IB-stats - Inloggning</h2>
+    @Html.LabelFor(m => m.Username, "Användarnamn", new { @class = "sr-only" })
+    @Html.TextBoxFor(m => m.Username, new { @class = "form-control", placeholder = "Användarnamn", required = "" })
+    @Html.LabelFor(m => m.Password, "Lösenord", new { @class = "sr-only" })
+    @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "Lösenord", required = "" })
+    <input type="submit" value="Logga in" class="btn btn-lg btn-primary btn-block" />
+}

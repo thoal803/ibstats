@@ -1,0 +1,62 @@
+﻿@model IbStats.ViewModels.EditMatchViewModel
+@using IbStats.Models
+
+<h2>Ändra match</h2>
+<hr />
+<div class="panel panel-default">
+    <div class="panel-body table-responsive">
+
+        @using (Html.BeginForm("Save", "MatchSession", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+        {
+            @Html.HiddenFor(x => x.Match.MatchID)
+            @Html.HiddenFor(x => x.MatchSessionID)
+            @Html.HiddenFor(x => x.CurrentMatchID)
+
+            <div class="form-group">
+                <div class="col-md-2">
+                    @Html.LabelFor(x => x.Match.StartTime, "Starttid")
+                </div>
+                <div class="col-md-4">
+                    @Html.TextBoxFor(x => x.Match.StartTime, "{0:yyyy-MM-dd HH:mm}", new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-2">
+                    @Html.LabelFor(x => x.Match.EndTime, "Sluttid")
+                </div>
+                <div class="col-md-4">
+                    @Html.TextBoxFor(x => x.Match.EndTime, "{0:yyyy-MM-dd HH:mm}", new { @class = "form-control datepicker", data_date_format = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.FullDateTimePattern.ToLower() })
+                </div>
+            </div>
+            <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                    <tr>
+                        <th>Tid</th>
+                        <th>Lag</th>
+                        <th>Målgörare</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach(Goal goal in Model.Match.Goals.OrderBy(x => x.RegistrationTime ?? DateTime.MinValue))
+                    {
+                        <tr>
+                            <td>@goal.RegistrationTime</td>
+                            <td>&nbsp;</td>
+                            <td>@goal.Scorer.Name</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <button type="submit" class="btn btn-success"><i class="fa fa-check">&nbsp;</i>Spara</button>
+            if (Model.CurrentMatchID == 0)
+            {
+                <a href="@Url.Action("PlayMatchSession", "Game", new { id = Model.MatchSessionID })" class="btn btn-default"><i class="fa fa-times">&nbsp;</i>Avbryt</a>
+            }
+            else
+            {
+                <a href="@Url.Action("PlayMatchSession", "Game", new { id = Model.MatchSessionID, matchId = Model.CurrentMatchID })" class="btn btn-default"><i class="fa fa-times">&nbsp;</i>Avbryt</a>
+            }
+        }
+    </div>
+</div>
+
